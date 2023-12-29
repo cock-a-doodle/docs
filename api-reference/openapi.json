@@ -1,195 +1,380 @@
-{
-  "openapi": "3.0.1",
-  "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
-    "version": "1.0.0"
-  },
-  "servers": [
-    {
-      "url": "http://sandbox.mintlify.com"
-    }
-  ],
-  "security": [
-    {
-      "bearerAuth": []
-    }
-  ],
-  "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return in a response",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
-          },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
-          }
-        }
-      },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
-      },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "message": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
-      }
-    }
-  }
-}
+openapi: 3.0.3
+info:
+  title: DeepReel API Documentation (latest)
+  version: 1.0.0
+  description: |2
+
+    This page contains the documentation on how to use DEEPREEL AI Platform through API calls.
+    > Note: For any endpoints blah blah blah...
+
+    # Introduction
+    This API is documented in **OpenAPI format**.
+
+    # Request Content-Type
+    The Content-Type for POST and PUT requests can be set to `application/x-www-form-urlencoded`, `multipart/form-data`, or `application/json`.
+
+    # Response Content-Type
+    Most API endpoints provide the information in JSON format.
+
+    # Authentication
+    > All of the endpoints require APIKey authentication.
+
+    ### ApiKeyAuth Scheme
+
+    | Item                   | Value     |
+    | ---------------------- | --------- |
+    | Security Scheme Type:  | API Key   |
+    | Header parameter name: | X-API-KEY |
+    | Header parameter desc: | API key with the prefix: `dr_` <br> e.g. `dr_ApnKD16Sw64AQ6-arfK0PTCPcXsTuIqEHZENX0Q2MSogCZu` |
+
+    <SecurityDefinitions />
+
+    To become authenticated you will need to have an API Key (please reach out to sales@deepreel.com to request an ApiKey).
+    Once you have your API Key you can pass it in along in an HTTP header like this:
+    ```
+    curl --location --request GET 'http://127.0.0.1:8001/project/assets/avatar/?campaign=true' --header 'x-api-key: dr_ApnKD16Sw64AQ6-arfK0PTCPcXsTuIqEHZENX0Q2MSogCZu'
+    ```
+    and this is how POST requests will look:
+    ```
+    curl --location --request POST 'http://127.0.0.1:8001/project/generate_video/'
+    --header 'x-api-key: dr_ApnKD16Sw64AQ6-arfK0PTCPcXsTuIqEHZENX0Q2MSogCZu'
+    --header 'Content-Type: application/json'
+    --data-raw '{'slate_script':[{'type':'paragraph','children':[{'speedValue':1,'volumeValue':'medium','pitchValue':'medium','text':'Hello DeepReel!'}]}],'avatar_id':'<id>','project_id':'<id>','language_id': '<id>','background_color':'#2E353E','aspect_ratio':'16:9'}'
+    ```
+
+    # Boolean values
+    If an endpoint accepts a boolean be sure to specify it as a lowercase `true` or `false` value unless noted otherwise.
+  x-logo:
+    url: https://beta.deepreel.com/icons/DeepReel-logo-main.png
+paths:
+  /project/assets/avatar/:
+    get:
+      operationId: Get Avatars
+      description: List of available avatars either public or associated with the
+        authenticated user.
+      parameters:
+      - in: query
+        name: campaign
+        schema:
+          type: boolean
+        description: Is part of a campaign
+        examples:
+          Example-campaign:
+            value: 'True'
+            summary: example-campaign
+      - in: query
+        name: gender
+        schema:
+          type: integer
+        description: Filter by gender. 1 for Male, 2 for Female and 3 for Non Binary
+        examples:
+          Example-gender-male:
+            value: '1'
+            summary: example-gender-male
+      - in: query
+        name: language
+        schema:
+          type: integer
+        description: Filter by the id of the language
+      tags:
+      - project
+      security:
+      - apiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Avatar'
+          description: ''
+  /project/assets/background/:
+    get:
+      operationId: Get Backgrounds
+      description: List of available backgrounds either public or associated with
+        the authenticated user.
+      tags:
+      - project
+      security:
+      - apiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Background'
+          description: ''
+  /project/assets/language/:
+    get:
+      operationId: Get Languages
+      description: List of available languages
+      parameters:
+      - in: query
+        name: campaign
+        schema:
+          type: boolean
+        description: Is part of a campaign
+        examples:
+          Example-campaign:
+            value: 'True'
+            summary: example-campaign
+      - in: query
+        name: gender
+        schema:
+          type: string
+          format: uuid
+        description: Languagues associated with the avatar
+        examples:
+          Example-avatarId:
+            value: 1ba08abc-b551-4893-b816-f072eb6565c4
+            summary: Example avatar id
+      tags:
+      - project
+      security:
+      - apiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Language'
+          description: ''
+  /project/generate_video/:
+    post:
+      operationId: Generate Video
+      description: Create a customized video.
+      tags:
+      - project
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                slate_script:
+                  type: string
+                avatar_id:
+                  type: string
+                  format: uuid
+                project_id:
+                  type: string
+                  format: uuid
+                language_id:
+                  type: string
+                  format: uuid
+                aspect_ratio:
+                  type: string
+                  enum:
+                  - '16:9'
+                  - '4:3'
+                  - '1:1'
+                background_image:
+                  type: string
+                  format: uri
+                stability:
+                  type: number
+                  minimum: 0
+                  maximum: 1
+                style_exaggeration:
+                  type: number
+                  minimum: 0
+                  maximum: 1
+                background_color:
+                  type: string
+                  description: 'RGB hex value e.g. #ff332d'
+                  pattern: '#[0-9A-Fa-f]{6}'
+              required:
+              - slate_script
+              - avatar_id
+              - project_id
+              - language_id
+              - aspect_ratio
+      security:
+      - apiKeyAuth: []
+      responses:
+        '404':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  project_id:
+                    type: array
+                    items:
+                      type: string
+          description: ''
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  video_id:
+                    type: string
+                    format: uuid
+                  time_estimated:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                  message:
+                    type: string
+          description: ''
+components:
+  schemas:
+    Avatar:
+      type: object
+      description: Serializer for avatar model
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          nullable: true
+          maxLength: 100
+        cropped_asset:
+          type: string
+          format: uri
+          nullable: true
+        cropped_asset_landscape:
+          type: string
+          format: uri
+          nullable: true
+        cropped_asset_portrait:
+          type: string
+          format: uri
+          nullable: true
+        full_asset:
+          type: string
+          format: uri
+          nullable: true
+        full_asset_logo:
+          type: string
+          format: uri
+          nullable: true
+        words_per_minute:
+          type: string
+          readOnly: true
+        is_pending:
+          type: boolean
+        estimation_completion_time:
+          type: string
+          format: date-time
+          nullable: true
+        is_custom:
+          type: boolean
+        orientation:
+          $ref: '#/components/schemas/OrientationEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_colorcode_bg_supported:
+          type: boolean
+          nullable: true
+      required:
+      - created_at
+      - id
+      - words_per_minute
+    Background:
+      type: object
+      description: Serializer for Background model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        file:
+          type: string
+          format: uri
+        low_resolution_file:
+          type: string
+          format: uri
+          nullable: true
+        is_public:
+          type: boolean
+        name:
+          type: string
+          nullable: true
+          maxLength: 50
+        file_name:
+          type: string
+          readOnly: true
+        low_resolution_file_name:
+          type: string
+          readOnly: true
+      required:
+      - created_at
+      - file
+      - file_name
+      - id
+      - low_resolution_file_name
+      - updated_at
+    Language:
+      type: object
+      description: Serializer for language model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        is_ssml_supported:
+          type: string
+          readOnly: true
+        is_multilingual:
+          type: boolean
+        is_eleven_lab:
+          type: string
+          readOnly: true
+        translate_code:
+          type: string
+          nullable: true
+          maxLength: 10
+        is_default:
+          type: string
+          readOnly: true
+      required:
+      - id
+      - is_default
+      - is_eleven_lab
+      - is_ssml_supported
+      - name
+    OrientationEnum:
+      enum:
+      - horizontal
+      - vertical
+      type: string
+      description: |-
+        * `horizontal` - horizontal
+        * `vertical` - vertical
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+      description: 'API key with the prefix: dr_'
