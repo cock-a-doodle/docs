@@ -68,6 +68,15 @@
         "api-reference/endpoint/create",
         "api-reference/endpoint/delete"
       ]
+    },
+    {
+      "group": "Project",
+      "pages": [
+        "api-reference/project/get-avatars",
+        "api-reference/project/get-backgrounds",
+        "api-reference/project/get-languages",
+        "api-reference/project/post-generate-video"
+      ]
     }
   ],
   "footerSocials": {
