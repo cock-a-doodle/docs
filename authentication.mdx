@@ -1,0 +1,19 @@
+---
+title: "Authentication"
+---
+
+The DeepReel API uses ApiKey Auth Scheme for authentication.
+
+#### ApiKey Scheme
+
+| Item                   | Value                                                                                          |
+| ---------------------- | ---------------------------------------------------------------------------------------------- |
+| Security Scheme Type:  | API Key                                                                                        |
+| Header parameter name: | X-API-KEY                                                                                      |
+| Header parameter desc: | API key with the prefix: `dr_` <br/> e.g. `dr_ApnKD16Sw64AQ6-arfK0PTCPcXsTuIqEHZENX0Q2MSogCZu` |
+
+### Authentication Errors
+
+_Error: API key not set or invalid_
+
+**Solution:** Double-check your API key for any typos. If you’re copying it from a website or document, ensure there are no leading or trailing whitespaces. If the error persists, verify the API key's validity in the DeepReel's dashboard.

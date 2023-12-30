@@ -1,0 +1,215 @@
+---
+title: "Webhook Overview"
+---
+
+Webhook events serve as the method by which DeepReel informs your endpoints about various interactions or occurrences, such as the success or failure of avatar video processing. These events are transmitted by DeepReel as POST requests to your designated webhook endpoint
+
+### List Available Webhhok Events
+
+[See detailed API reference](/api-reference/webhook/get-subscribable-events)
+
+Let's begin exploring webhooks by enumerating all the available webhook events within the DeepReel API.
+
+<Note>
+  For now the only subscribable events are `video.generation.success`,
+  `video.generation.fail`, `audio.generation.success` and
+  `audio.generation.fail`.
+</Note>
+
+<Note>
+  We currently support registering only one endpoint (via the dashboard).
+</Note>
+
+<CodeGroup>
+```bash Request
+curl -request GET
+--url https://api.deepreel.com/webhook/events
+--header 'accept: application/json'
+--header 'x-api-key: <your-api-key>'
+```
+
+```javascript Response
+{
+  "events": [
+    "video.generation.success",
+    "video.generation.fail",
+    "audio.generation.success",
+    "audio.generation.fail"
+  ]
+}
+```
+
+</CodeGroup>
+
+### Events Payload
+
+<CodeGroup>
+
+```javascript Video Generation Success
+{
+  "type": "video.generation.success",
+  "error": null,
+  "data": {
+    "video_id": "<video_id>"
+  }
+}
+```
+
+```javascript Video Generation Failed
+{
+  "type": "video.generation.success",
+  "error": "<error-detail>",
+  "data": {
+    "video_id": "<video_id>"
+  }
+}
+```
+
+</CodeGroup>
+<br/>
+<CodeGroup>
+
+```javascript Audio Generation Success
+{
+  "type": "audio.generation.success",
+  "error": null,
+  "data": {
+    "audio_id": "<audio_id>"
+  }
+}
+```
+
+```javascript Audio Generation Failed
+{
+  "type": "audio.generation.success",
+  "error": "<error-detail>",
+  "data": {
+    "audio_id": "<audio_id>"
+  }
+}
+```
+
+</CodeGroup>
+
+## Register a Webhook Endpoint
+
+[See detailed API reference](/api-reference/webhook/register-endpoint)
+Utilize the 'add a webhook endpoint' feature to register your endpoint, which will handle DeepReel events.
+
+`events` refers to the specific events you wish to process. If this is not specified, your endpoint will receive all supported events from DeepReel.
+
+<Warning>
+  Please note that this action will overwrite any previously registered
+  endpoint.
+</Warning>
+
+<CodeGroup>
+```bash Request
+curl --request POST
+--url 'https://api.deepreel.com/webhook/endpoint' \
+--header 'Content-Type: application/json' \
+--header 'X-Api-Key: <your-api-key>' \
+--data '{
+  "url": "<your-endpoint>",
+  "events": ["video.generation.success"]
+}'
+```
+
+```javascript Response (Success)
+{
+  "error": null,
+  "data": [
+    {
+      "status": "enabled",
+      "events": ["video.generation.success"],
+      "created_at": "2023-12-01T00:00:00",
+      "url": "<your-webhook-endpoint-uri>",
+      "endpoint_id": "<endpoint_id>",
+      "secret": "<secret>"
+    }
+  ]
+}
+```
+
+```javascript Response (Error)
+{
+  "error": "<error-detail>",
+  "data": null
+}
+```
+
+</CodeGroup>
+
+## Get Registered Webhook Endpoint
+
+[See detailed API reference](/api-reference/webhook/get-registered-endpoint)
+You can use this endpoint to get your registered endpoint.
+
+<CodeGroup>
+```bash Request
+curl -request GET
+--url https://api.deepreel.com/webhook/endpoint
+--header 'accept: application/json'
+--header 'x-api-key: <your-api-key>'
+```
+
+```javascript Response
+{
+  "error": null,
+  "data": [
+    {
+      "status": "enabled",
+      "events": ["video.generation.success"],
+      "created_at": "2023-12-01T00:00:00",
+      "url": "<your-webhook-endpoint-uri>",
+      "endpoint_id": "<endpoint_id>",
+      "secret": "<secret>"
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+## Update a Registered Webhook Endpoint
+
+[See detailed API reference](/api-reference/webhook/update-registered-endpoint)
+
+Utilize the update a webhook endpoint to modify an already registered endpoint.
+
+<CodeGroup>
+```bash Request
+curl -request PATCH
+--url https://api.deepreel.com/webhook/endpoint
+--header 'x-api-key: <your-api-key>'
+--data '{
+  "endpoint_id": "<endpoint_id>",
+  "url": "<new-url>",
+  "events": [
+    "video.generation.success",
+    "audio.generation.success"
+  ],
+  "disable": false
+}'
+```
+
+```javascript Response
+{
+  "error": null,
+  "data": [
+    {
+      "status": "enabled",
+      "events": [
+        "video.generation.success",
+        "audio.generation.success"
+      ],
+      "created_at": "2023-12-01T00:00:00",
+      "url": "<your-webhook-endpoint-uri>",
+      "endpoint_id": "<endpoint_id>",
+      "secret": "<secret>"
+    }
+  ]
+}
+```
+
+</CodeGroup>
