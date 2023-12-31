@@ -2,24 +2,21 @@ openapi: 3.0.3
 info:
   title: DeepReel API Documentation (latest)
   version: 1.0.0
-  description: |
+  description: |2
 
     This page contains the documentation on how to use DEEPREEL AI Platform through API calls.
     > Note: For any endpoints blah blah blah...
 
-    ### Request Content-Type
+    # Introduction
+    This API is documented in **OpenAPI format**.
 
+    # Request Content-Type
     The Content-Type for POST and PUT requests can be set to `application/x-www-form-urlencoded`, `multipart/form-data`, or `application/json`.
 
-    ### Response Content-Type
-
-    Most API endpoints provide the information in JSON format.
-
-    ### Authentication
-
+    # Authentication
     > All of the endpoints require APIKey authentication.
 
-    #### ApiKeyAuth Scheme
+    ### ApiKeyAuth Scheme
 
     | Item                   | Value     |
     | ---------------------- | --------- |
@@ -27,24 +24,46 @@ info:
     | Header parameter name: | X-API-KEY |
     | Header parameter desc: | API key with the prefix: `dr_` <br> e.g. `dr_ApnKD16Sw64AQ6-arfK0PTCPcXsTuIqEHZENX0Q2MSogCZu` |
 
-    To become authenticated you will need to have an API Key (please reach out to sales@deepreel.com to request an ApiKey).
+    <SecurityDefinitions />
 
+    To become authenticated you will need to have an API Key (please reach out to sales@deepreel.com to request an ApiKey).
     Once you have your API Key you can pass it in along in an HTTP header like this:
     ```
-    curl --location --request GET 'http://127.0.0.1:8001/project/assets/avatar/?campaign=true' --header 'x-api-key: dr_ApnKD16Sw64AQ6-arfK0PTCPcXsTuIqEHZENX0Q2MSogCZu'
+    curl --request GET 'http://127.0.0.1:8001/project/assets/avatar/?campaign=true'
+    --header 'x-api-key: dr_ApnKD16Sw64AQ6-arfK0PTCPcXsTuIqEHZENX0Q2MSogCZu'
     ```
-
     and this is how POST requests will look:
-
     ```
-    curl --location --request POST 'http://127.0.0.1:8001/project/generate_video/'
+    curl --request POST 'http://127.0.0.1:8001/project/generate_video/'
     --header 'x-api-key: dr_ApnKD16Sw64AQ6-arfK0PTCPcXsTuIqEHZENX0Q2MSogCZu'
     --header 'Content-Type: application/json'
-    --data-raw '{'slate_script':[{'type':'paragraph','children':[{'speedValue':1,'volumeValue':'medium','pitchValue':'medium','text':'Hello DeepReel!'}]}],'avatar_id':'<id>','project_id':'<id>','language_id': '<id>','background_color':'#2E353E','aspect_ratio':'16:9'}'
+    --data-raw
+        '{
+            'slate_script': [
+                {
+                    'type': 'paragraph',
+                    'children': [
+                        {
+                            'speedValue': 1,
+                            'volumeValue': 'medium',
+                            'pitchValue': 'medium',
+                            'text': 'Hello DeepReel!'
+                        }
+                    ]
+                }
+            ],
+            'avatar_id': '<id>',
+            'project_id': '<id>',
+            'language_id': '<id>',
+            'background_color': '#2E353E',
+            'aspect_ratio': '16:9'
+        }'
     ```
 
-    ### Boolean values
+    # Boolean values
     If an endpoint accepts a boolean be sure to specify it as a lowercase `true` or `false` value unless noted otherwise.
+  x-logo:
+    url: /icons/deepreel-logo-main.png
 paths:
   /project/assets/avatar/:
     get:
@@ -53,15 +72,6 @@ paths:
         List of available avatars either public or associated with the
         authenticated user.
       parameters:
-        - in: query
-          name: campaign
-          schema:
-            type: boolean
-          description: Is part of a campaign
-          examples:
-            Example-campaign:
-              value: "True"
-              summary: example-campaign
         - in: query
           name: gender
           schema:
@@ -114,16 +124,7 @@ paths:
       description: List of available languages
       parameters:
         - in: query
-          name: campaign
-          schema:
-            type: boolean
-          description: Is part of a campaign
-          examples:
-            Example-campaign:
-              value: "True"
-              summary: example-campaign
-        - in: query
-          name: gender
+          name: avatar_id
           schema:
             type: string
             format: uuid
@@ -145,6 +146,116 @@ paths:
                 items:
                   $ref: "#/components/schemas/Language"
           description: ""
+  /project/assets/video/:
+    get:
+      operationId: Get Videos
+      description: List of generated videos
+      tags:
+        - project
+      security:
+        - apiKeyAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Video"
+          description: ""
+  /project/assets/video/{id}/:
+    get:
+      operationId: Get Video
+      description: The retrieve action returns a single object selected by `id`.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this video.
+          required: true
+      tags:
+        - project
+      security:
+        - apiKeyAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Video"
+          description: ""
+    put:
+      operationId: Update Video
+      description: The update action updates a single object selected by `id`.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this video.
+          required: true
+      tags:
+        - project
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                is_public:
+                  type: boolean
+              required:
+                - title
+      security:
+        - apiKeyAuth: []
+      responses:
+        "400":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+          description: ""
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Video"
+          description: ""
+    delete:
+      operationId: Delete Video
+      description: The delete action deletes a single object selected by `id`.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this video.
+          required: true
+      tags:
+        - project
+      security:
+        - apiKeyAuth: []
+      responses:
+        "400":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+          description: ""
+        "204":
+          description: No response body
   /project/generate_video/:
     post:
       operationId: Generate Video
@@ -165,6 +276,9 @@ paths:
                 project_id:
                   type: string
                   format: uuid
+                  description:
+                    The project_id of the project, you can query                                             GET
+                    https://api.deepreel.com/projects to list all available projects.
                 language_id:
                   type: string
                   format: uuid
@@ -198,6 +312,26 @@ paths:
       security:
         - apiKeyAuth: []
       responses:
+        "404":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+          description: ""
+        "400":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  project_id:
+                    type: array
+                    items:
+                      type: string
+          description: ""
         "200":
           content:
             application/json:
@@ -209,6 +343,8 @@ paths:
                     format: uuid
                   time_estimated:
                     type: string
+                    nullable: true
+                    format: date-time
                   message:
                     type: string
           description: ""
@@ -350,11 +486,86 @@ components:
       description: |-
         * `horizontal` - horizontal
         * `vertical` - vertical
+    StatusEnum:
+      enum:
+        - pending
+        - complete
+      type: string
+      description: |-
+        * `pending` - pending
+        * `complete` - complete
+    Video:
+      type: object
+      description: Serializer for Video model
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        video:
+          type: string
+          format: uri
+          nullable: true
+        background_color:
+          type: string
+          nullable: true
+          maxLength: 7
+        title:
+          type: string
+          nullable: true
+          maxLength: 100
+        status:
+          $ref: "#/components/schemas/StatusEnum"
+        video_status:
+          $ref: "#/components/schemas/VideoStatusEnum"
+        avatar:
+          $ref: "#/components/schemas/Avatar"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_public:
+          type: boolean
+        estimation_completion_time:
+          type: string
+          format: date-time
+          nullable: true
+        video_creator:
+          type: string
+          readOnly: true
+        video_creator_id:
+          type: string
+          readOnly: true
+        aspect_ratio:
+          type: string
+          nullable: true
+          maxLength: 15
+      required:
+        - avatar
+        - created_at
+        - id
+        - video_creator
+        - video_creator_id
+    VideoStatusEnum:
+      enum:
+        - Pending
+        - Complete
+        - Queued
+        - Processing
+        - Failed
+      type: string
+      description: |-
+        * `Pending` - Pending
+        * `Complete` - Complete
+        * `Queued` - Queued
+        * `Processing` - Processing
+        * `Failed` - Failed
   securitySchemes:
     apiKeyAuth:
       type: apiKey
       in: header
       name: X-API-KEY
-      description: "Your API key. This is required by most endpoints to access our API programatically. You can view your x-api-key using the 'Profile' tab on the website."
-x-logo:
-  url: https://beta.deepreel.com/icons/DeepReel-logo-main.png
+      description:
+        "Your API key with the prefix: `dr_`. This is required by all endpoints
+        to access our API programatically. You can view your x-api-key using the 'Profile'
+        tab on the website."

@@ -1,4 +1,4 @@
-[See detailed API reference](/voicelab/voice-design)
+[See detailed API reference](/api-reference/video/get-video)
 
 After you've created your video, you have the option to monitor its progress. Once the video is fully processed, its status will update to 'completed'.
 
@@ -17,22 +17,34 @@ curl --request GET
 
 ```javascript Response (Processing)
 {
-  "video_id": "<video_id>",
-  "message": "TODO"
-}
-```
-
-```javascript Response (Completed)
-{
-  "video_id": "<video_id>",
-  "message": "TODO"
-}
-```
-
-```javascript Response (Failed)
-{
-  "video_id": "<video_id>",
-  "message": "TODO"
+  "id": "<video_id>",
+  "video": "<string>",
+  "background_color": "<string>",
+  "title": "<string>",
+  "status": "pending",
+  "video_status": "Pending",
+  "avatar": {
+    "id": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
+    "name": "<string>",
+    "cropped_asset": "<string>",
+    "cropped_asset_landscape": "<string>",
+    "cropped_asset_portrait": "<string>",
+    "full_asset": "<string>",
+    "full_asset_logo": "<string>",
+    "words_per_minute": "<string>",
+    "is_pending": true,
+    "estimation_completion_time": "2023-11-07T05:31:56Z",
+    "is_custom": true,
+    "orientation": "horizontal",
+    "created_at": "2023-11-07T05:31:56Z",
+    "is_colorcode_bg_supported": true
+  },
+  "created_at": "2023-11-07T05:31:56Z",
+  "is_public": true,
+  "estimation_completion_time": "2023-11-07T05:31:56Z",
+  "video_creator": "<string>",
+  "video_creator_id": "<string>",
+  "aspect_ratio": "<string>"
 }
 ```
 
