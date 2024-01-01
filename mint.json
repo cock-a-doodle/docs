@@ -75,9 +75,7 @@
     {
       "group": "Audio",
       "pages": [
-        "api-reference/audio/get-audio",
         "api-reference/audio/create-audio",
-        "api-reference/audio/delete-audio",
         "api-reference/audio/list-audios"
       ]
     },
@@ -98,10 +96,7 @@
     },
     {
       "group": "Project",
-      "pages": [
-        "api-reference/project/create-project",
-        "api-reference/project/list-projects"
-      ]
+      "pages": ["api-reference/project/list-projects"]
     },
     {
       "group": "User",
