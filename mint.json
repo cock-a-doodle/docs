@@ -87,7 +87,10 @@
     },
     {
       "group": "Voice",
-      "pages": ["api-reference/voice/list-voices"]
+      "pages": [
+        "api-reference/voice/list-voices",
+        "api-reference/voice/get-voice-saved-settings"
+      ]
     },
     {
       "group": "Avatar",

@@ -68,137 +68,135 @@ paths:
   /project/assets/avatar/:
     get:
       operationId: Get Avatars
-      description:
-        List of available avatars either public or associated with the
+      description: List of available avatars either public or associated with the
         authenticated user.
       parameters:
-        - in: query
-          name: gender
-          schema:
-            type: integer
-          description: Filter by gender. 1 for Male, 2 for Female and 3 for Non Binary
-          examples:
-            Example-gender-male:
-              value: "1"
-              summary: example-gender-male
-        - in: query
-          name: language
-          schema:
-            type: integer
-          description: Filter by the id of the language
+      - in: query
+        name: gender
+        schema:
+          type: integer
+        description: Filter by gender. 1 for Male, 2 for Female and 3 for Non Binary
+        examples:
+          Example-gender-male:
+            value: '1'
+            summary: example-gender-male
+      - in: query
+        name: language
+        schema:
+          type: integer
+        description: Filter by the id of the language
       tags:
-        - project
+      - project
       security:
-        - apiKeyAuth: []
+      - apiKeyAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Avatar"
-          description: ""
+                  $ref: '#/components/schemas/Avatar'
+          description: ''
   /project/assets/background/:
     get:
       operationId: Get Backgrounds
-      description:
-        List of available backgrounds either public or associated with
+      description: List of available backgrounds either public or associated with
         the authenticated user.
       tags:
-        - project
+      - project
       security:
-        - apiKeyAuth: []
+      - apiKeyAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Background"
-          description: ""
+                  $ref: '#/components/schemas/Background'
+          description: ''
   /project/assets/language/:
     get:
       operationId: Get Languages
       description: List of available languages
       parameters:
-        - in: query
-          name: avatar_id
-          schema:
-            type: string
-            format: uuid
-          description: Languagues associated with the avatar
-          examples:
-            Example-avatarId:
-              value: 1ba08abc-b551-4893-b816-f072eb6565c4
-              summary: Example avatar id
+      - in: query
+        name: avatar_id
+        schema:
+          type: string
+          format: uuid
+        description: Languagues associated with the avatar
+        examples:
+          Example-avatarId:
+            value: 1ba08abc-b551-4893-b816-f072eb6565c4
+            summary: Example avatar id
       tags:
-        - project
+      - project
       security:
-        - apiKeyAuth: []
+      - apiKeyAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Language"
-          description: ""
+                  $ref: '#/components/schemas/Language'
+          description: ''
   /project/assets/video/:
     get:
       operationId: Get Videos
       description: List of generated videos
       tags:
-        - project
+      - project
       security:
-        - apiKeyAuth: []
+      - apiKeyAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Video"
-          description: ""
+                  $ref: '#/components/schemas/Video'
+          description: ''
   /project/assets/video/{id}/:
     get:
       operationId: Get Video
       description: The retrieve action returns a single object selected by `id`.
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-            format: uuid
-          description: A UUID string identifying this video.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this video.
+        required: true
       tags:
-        - project
+      - project
       security:
-        - apiKeyAuth: []
+      - apiKeyAuth: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Video"
-          description: ""
+                $ref: '#/components/schemas/Video'
+          description: ''
     put:
       operationId: Update Video
       description: The update action updates a single object selected by `id`.
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-            format: uuid
-          description: A UUID string identifying this video.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this video.
+        required: true
       tags:
-        - project
+      - project
       requestBody:
         content:
           application/json:
@@ -210,11 +208,11 @@ paths:
                 is_public:
                   type: boolean
               required:
-                - title
+              - title
       security:
-        - apiKeyAuth: []
+      - apiKeyAuth: []
       responses:
-        "400":
+        '400':
           content:
             application/json:
               schema:
@@ -222,30 +220,30 @@ paths:
                 properties:
                   message:
                     type: string
-          description: ""
-        "200":
+          description: ''
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Video"
-          description: ""
+                $ref: '#/components/schemas/Video'
+          description: ''
     delete:
       operationId: Delete Video
       description: The delete action deletes a single object selected by `id`.
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-            format: uuid
-          description: A UUID string identifying this video.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this video.
+        required: true
       tags:
-        - project
+      - project
       security:
-        - apiKeyAuth: []
+      - apiKeyAuth: []
       responses:
-        "400":
+        '400':
           content:
             application/json:
               schema:
@@ -253,15 +251,15 @@ paths:
                 properties:
                   message:
                     type: string
-          description: ""
-        "204":
+          description: ''
+        '204':
           description: No response body
   /project/generate_video/:
     post:
       operationId: Generate Video
       description: Create a customized video.
       tags:
-        - project
+      - project
       requestBody:
         content:
           application/json:
@@ -276,8 +274,7 @@ paths:
                 project_id:
                   type: string
                   format: uuid
-                  description:
-                    The project_id of the project, you can query                                             GET
+                  description: The project_id of the project, you can query                                             GET
                     https://api.deepreel.com/projects to list all available projects.
                 language_id:
                   type: string
@@ -285,9 +282,9 @@ paths:
                 aspect_ratio:
                   type: string
                   enum:
-                    - "16:9"
-                    - "4:3"
-                    - "1:1"
+                  - '16:9'
+                  - '4:3'
+                  - '1:1'
                 background_image:
                   type: string
                   format: uri
@@ -301,18 +298,18 @@ paths:
                   maximum: 1
                 background_color:
                   type: string
-                  description: "RGB hex value e.g. #ff332d"
-                  pattern: "#[0-9A-Fa-f]{6}"
+                  description: 'RGB hex value e.g. #ff332d'
+                  pattern: '#[0-9A-Fa-f]{6}'
               required:
-                - slate_script
-                - avatar_id
-                - project_id
-                - language_id
-                - aspect_ratio
+              - slate_script
+              - avatar_id
+              - project_id
+              - language_id
+              - aspect_ratio
       security:
-        - apiKeyAuth: []
+      - apiKeyAuth: []
       responses:
-        "404":
+        '404':
           content:
             application/json:
               schema:
@@ -320,8 +317,8 @@ paths:
                 properties:
                   message:
                     type: string
-          description: ""
-        "400":
+          description: ''
+        '400':
           content:
             application/json:
               schema:
@@ -331,8 +328,8 @@ paths:
                     type: array
                     items:
                       type: string
-          description: ""
-        "200":
+          description: ''
+        '200':
           content:
             application/json:
               schema:
@@ -347,9 +344,142 @@ paths:
                     format: date-time
                   message:
                     type: string
-          description: ""
+          description: ''
+  /project/user_voice_audio_saved_settings/{voice_id}/:
+    get:
+      operationId: Get Voice Properties
+      description: Get the saved settings of the voice.
+      parameters:
+      - in: path
+        name: voice_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - project
+      security:
+      - apiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserVoiceAudioSavedSetting'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+          description: ''
+  /project/voice/:
+    get:
+      operationId: Get User Voices
+      description: Get the list of user's saved voices.
+      parameters:
+      - in: query
+        name: gender
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - project
+      security:
+      - apiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVoiceList'
+          description: ''
+  /subscription/active/:
+    get:
+      operationId: Active Subscription Info
+      tags:
+      - subscription
+      security:
+      - apiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plan:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      usage_based_allowed:
+                        type: boolean
+                  currently_status:
+                    type: string
+                  plan_expires_at:
+                    type: string
+                    format: date-time
+                  total_credits:
+                    type: number
+                    minimum: 0
+                  credits_left:
+                    type: number
+                    minimum: 0
+                  credits_used:
+                    type: number
+                    minimum: 0
+                  extra_credits_charges:
+                    type: number
+                  total_custom_avatar_credits:
+                    type: number
+                    minimum: 0
+                  custom_avatar_credits_left:
+                    type: number
+                    minimum: 0
+                  cancel_on_month_end:
+                    type: boolean
+                  scheduled_subscription:
+                    type: object
+                    nullable: true
+                    properties:
+                      plan:
+                        type: string
+                      mode:
+                        type: string
+                        enum:
+                        - month
+                        - year
+                      start_date:
+                        type: string
+                        format: date-time
+          description: ''
 components:
   schemas:
+    AgeGroupEnum:
+      enum:
+      - Young
+      - Adult
+      - Old
+      type: string
+      description: |-
+        * `Young` - Young
+        * `Adult` - Adult
+        * `Old` - Old
     Avatar:
       type: object
       description: Serializer for avatar model
@@ -394,7 +524,7 @@ components:
         is_custom:
           type: boolean
         orientation:
-          $ref: "#/components/schemas/OrientationEnum"
+          $ref: '#/components/schemas/OrientationEnum'
         created_at:
           type: string
           format: date-time
@@ -403,9 +533,9 @@ components:
           type: boolean
           nullable: true
       required:
-        - created_at
-        - id
-        - words_per_minute
+      - created_at
+      - id
+      - words_per_minute
     Background:
       type: object
       description: Serializer for Background model
@@ -441,12 +571,23 @@ components:
           type: string
           readOnly: true
       required:
-        - created_at
-        - file
-        - file_name
-        - id
-        - low_resolution_file_name
-        - updated_at
+      - created_at
+      - file
+      - file_name
+      - id
+      - low_resolution_file_name
+      - updated_at
+    BlankEnum:
+      enum:
+      - ''
+    GenderEnum:
+      enum:
+      - Male
+      - Female
+      type: string
+      description: |-
+        * `Male` - Male
+        * `Female` - Female
     Language:
       type: object
       description: Serializer for language model
@@ -473,27 +614,71 @@ components:
           type: string
           readOnly: true
       required:
-        - id
-        - is_default
-        - is_eleven_lab
-        - is_ssml_supported
-        - name
+      - id
+      - is_default
+      - is_eleven_lab
+      - is_ssml_supported
+      - name
+    NullEnum:
+      enum:
+      - null
     OrientationEnum:
       enum:
-        - horizontal
-        - vertical
+      - horizontal
+      - vertical
       type: string
       description: |-
         * `horizontal` - horizontal
         * `vertical` - vertical
+    PaginatedVoiceList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Voice'
     StatusEnum:
       enum:
-        - pending
-        - complete
+      - pending
+      - complete
       type: string
       description: |-
         * `pending` - pending
         * `complete` - complete
+    UserVoiceAudioSavedSetting:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        stability:
+          type: number
+          format: double
+        similarity_boost:
+          type: number
+          format: double
+        style_exaggeration:
+          type: number
+          format: double
+        voice:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - id
     Video:
       type: object
       description: Serializer for Video model
@@ -515,11 +700,11 @@ components:
           nullable: true
           maxLength: 100
         status:
-          $ref: "#/components/schemas/StatusEnum"
+          $ref: '#/components/schemas/StatusEnum'
         video_status:
-          $ref: "#/components/schemas/VideoStatusEnum"
+          $ref: '#/components/schemas/VideoStatusEnum'
         avatar:
-          $ref: "#/components/schemas/Avatar"
+          $ref: '#/components/schemas/Avatar'
         created_at:
           type: string
           format: date-time
@@ -541,18 +726,18 @@ components:
           nullable: true
           maxLength: 15
       required:
-        - avatar
-        - created_at
-        - id
-        - video_creator
-        - video_creator_id
+      - avatar
+      - created_at
+      - id
+      - video_creator
+      - video_creator_id
     VideoStatusEnum:
       enum:
-        - Pending
-        - Complete
-        - Queued
-        - Processing
-        - Failed
+      - Pending
+      - Complete
+      - Queued
+      - Processing
+      - Failed
       type: string
       description: |-
         * `Pending` - Pending
@@ -560,12 +745,71 @@ components:
         * `Queued` - Queued
         * `Processing` - Processing
         * `Failed` - Failed
+    Voice:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        gender:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/GenderEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        age_group:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/AgeGroupEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        voice_accent:
+          $ref: '#/components/schemas/VoiceAccent'
+        accent_strength:
+          type: number
+          format: double
+        stability:
+          type: number
+          format: double
+        similarity_boost:
+          type: number
+          format: double
+        style_exaggeration:
+          type: number
+          format: double
+        is_favourite:
+          type: boolean
+          readOnly: true
+        sample_audio:
+          type: string
+          format: uri
+          nullable: true
+      required:
+      - id
+      - is_favourite
+      - voice_accent
+    VoiceAccent:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+      required:
+      - id
   securitySchemes:
     apiKeyAuth:
       type: apiKey
       in: header
       name: X-API-KEY
-      description:
-        "Your API key with the prefix: `dr_`. This is required by all endpoints
-        to access our API programatically. You can view your x-api-key using the 'Profile'
-        tab on the website."
+      description: 'Your API key with the prefix: `dr_`. This is required by all endpoints
+        to access our API programatically. You can view your x-api-key using the ''Profile''
+        tab on the website.'
