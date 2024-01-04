@@ -20,48 +20,7 @@
     "name": "Sign Up",
     "url": "https://beta.deepreel.com/signin"
   },
-  "tabs": [
-    {
-      "name": "API Reference",
-      "url": "api-reference"
-    }
-  ],
-  "anchors": [
-    {
-      "name": "Documentation",
-      "icon": "book-open-cover",
-      "url": "introduction"
-    },
-    {
-      "name": "API Reference",
-      "icon": "rectangle-terminal",
-      "url": "api-reference"
-    }
-  ],
   "navigation": [
-    {
-      "group": "Getting Started",
-      "pages": ["introduction"]
-    },
-    {
-      "group": "Guides",
-      "pages": ["authentication"]
-    },
-    {
-      "group": "Creating Avatar Video",
-      "pages": [
-        "video/create-video-with-your-personal-avatar",
-        "video/customize-video-background"
-      ]
-    },
-    {
-      "group": "Creating Audio",
-      "pages": ["audio/create-audio"]
-    },
-    {
-      "group": "Using DeepReel's Webhook Events",
-      "pages": ["webhook/overview", "webhook/setting-up"]
-    },
     {
       "group": "Video",
       "pages": [
@@ -76,7 +35,9 @@
       "group": "Audio",
       "pages": [
         "api-reference/audio/create-audio",
-        "api-reference/audio/list-audios"
+        "api-reference/audio/list-audios",
+        "api-reference/audio/get-audio",
+        "api-reference/audio/delete-audio"
       ]
     },
     {
@@ -92,24 +53,16 @@
     },
     {
       "group": "Avatar",
-      "pages": ["api-reference/avatar/list-avatars"]
-    },
-    {
-      "group": "Project",
-      "pages": ["api-reference/project/list-projects"]
+      "pages": [
+        "api-reference/avatar/list-avatars",
+        "api-reference/avatar/get-avatar"
+      ]
     },
     {
       "group": "User",
       "pages": [
         "api-reference/user/get-info",
         "api-reference/user/get-subscription-info"
-      ]
-    },
-    {
-      "group": "Webhook",
-      "pages": [
-        "api-reference/webhook/get-subscribable-events",
-        "api-reference/webhook/get-registered-endpoint"
       ]
     }
   ],
