@@ -67,7 +67,7 @@
     }
   ],
   "api": {
-    "baseUrl": "https://api.deepreel.com",
+    "baseUrl": "https://deepreel-api.afcodes.com",
     "playground": {
       "mode": "show"
     }
