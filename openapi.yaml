@@ -17,14 +17,29 @@ paths:
           name: gender
           schema:
             type: integer
-          description:
-            1 for Male, 2 for Female and 3 for Non Binary. Filter the Avatars
-            based on the Gender.
+            enum:
+              - 1
+                - Male
+              - 2
+                - Female
+              - 3
+                - Non Binary
+          description: Filter the Avatars based on the Gender.
+        - in: query
+          name: is_custom
+          schema:
+            type: boolean
+          description: Filter only the custom avatars.
         - in: query
           name: language
           schema:
             type: integer
           description: Id of the language. Filter the Avatars based on the language.
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: Filter the Avatars based on the name (partial-match and case-insensitive).
       tags:
         - project
       security:
@@ -47,6 +62,8 @@ paths:
           name: id
           schema:
             type: string
+            format: uuid
+          description: A UUID string identifying this avatar.
           required: true
       tags:
         - project
@@ -88,11 +105,20 @@ paths:
             type: string
             format: uuid
           description: Languagues associated with the avatar
-          required: true
           examples:
             Example-avatarId:
               value: 1ba08abc-b551-4893-b816-f072eb6565c4
               summary: Example avatar id
+        - in: query
+          name: voice_id
+          schema:
+            type: string
+            format: uuid
+          description: Languages associated with the voice
+          examples:
+            Example-voiceId:
+              value: 1ba08abc-b551-4893-b816-f072eb6565c4
+              summary: Example voice id
       tags:
         - project
       security:
@@ -106,8 +132,6 @@ paths:
                 items:
                   $ref: "#/components/schemas/ApiLanguage"
           description: ""
-        "204":
-          description: No response body
   /project/assets/user_audio/:
     get:
       operationId: List history of generated audios
@@ -145,6 +169,8 @@ paths:
           name: id
           schema:
             type: string
+            format: uuid
+          description: A UUID string identifying this user voice audios.
           required: true
       tags:
         - project
@@ -165,6 +191,8 @@ paths:
           name: id
           schema:
             type: string
+            format: uuid
+          description: A UUID string identifying this user voice audios.
           required: true
       tags:
         - project
@@ -178,6 +206,33 @@ paths:
       operationId: List Voices
       description: Returns a list of Voices associated with tehe authenticated user.
       parameters:
+        - in: query
+          name: age_group
+          schema:
+            type: string
+            enum:
+              - Adult
+              - Old
+              - Young
+          description: |-
+            Filter based on the age group of the voice.
+
+            * `Young` - Young
+            * `Adult` - Adult
+            * `Old` - Old
+        - in: query
+          name: gender
+          schema:
+            type: string
+            nullable: true
+            enum:
+              - Female
+              - Male
+          description: |-
+            Filter based on the gender of voice.
+
+            * `Male` - Male
+            * `Female` - Female
         - name: page
           required: false
           in: query
@@ -210,6 +265,8 @@ paths:
           name: id
           schema:
             type: string
+            format: uuid
+          description: A UUID string identifying this voice.
           required: true
       tags:
         - project
@@ -226,6 +283,23 @@ paths:
     get:
       operationId: List Videos
       description: Get history of generated videos
+      parameters:
+        - in: query
+          name: order
+          schema:
+            type: string
+            enum:
+              - -created_at - Sort by decending created at date (newest to oldest).
+              - created_at - Sort by ascending created at date (oldest to newest).
+          description:
+            Sort by the date of video creation (Ascending/Descending).                     <br>
+            If not provided, the resultset will be sort by newest to oldest.
+        - name: page
+          required: false
+          in: query
+          description: A page number within the paginated result set.
+          schema:
+            type: integer
       tags:
         - project
       security:
@@ -235,9 +309,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ApiVideoList"
+                $ref: "#/components/schemas/PaginatedApiVideoListList"
           description: ""
   /project/assets/video/{id}/:
     get:
@@ -344,6 +416,9 @@ paths:
             schema:
               type: object
               properties:
+                title:
+                  type: string
+                  description: Title of the video.
                 slate_script:
                   type: string
                   description: The script to be spoken by the avatar.
@@ -366,18 +441,30 @@ paths:
                 background_image:
                   type: string
                   format: uri
-                  description: A public HTTP link of an image (jpg/jpeg/png).
+                  description:
+                    A public HTTP link of an image (jpg/jpeg/png).                                             A
+                    public HTTP link of a video (mp4 only).                                             The
+                    background will loop the whole video if the background video is
+                    shorter than the whole video.
                 stability:
                   type: number
                   minimum: 0
                   maximum: 1
-                  description: Expressiveness of speaking style.
+                  description:
+                    This controls the level of variation in generated audio.             Low
+                    stability will increase expressiveness of speech while high             stability
+                    will lower expressiveness but increase the predictability of how
+                    the script is spoken.
                   default: 0.0
                 style_exaggeration:
                   type: number
                   minimum: 0
                   maximum: 1
-                  description: Level of exaggeration of the speaking style.
+                  description:
+                    Level of exaggeration of the speaking style. Available
+                    only for custom voices.             Higher values will make increase
+                    similarity of cloned voice but may cause the audio to be less
+                    stable.
                   default: 0.5
                 background_color:
                   type: string
@@ -391,7 +478,6 @@ paths:
               required:
                 - slate_script
                 - avatar_id
-                - language_id
                 - aspect_ratio
       security:
         - apiKeyAuth: []
@@ -434,26 +520,39 @@ paths:
               properties:
                 slate_script:
                   type: string
+                  description: Content to be spoken.
                 voice_id:
                   type: string
                   format: uuid
+                  description: The voice to be used to generate the audio
                 language_id:
-                  type: string
-                  format: uuid
+                  type: number
+                  description:
+                    Language used to generate the audio.                                                 Laungauge
+                    Id for `English - Default (en-us)` is `94`
                 stability:
                   type: number
                   minimum: 0
                   maximum: 1
-                  default: 0.5
+                  description:
+                    This controls the level of variation in generated audio.             Low
+                    stability will increase expressiveness of speech while high             stability
+                    will lower expressiveness but increase the predictability of how
+                    the script is spoken.
+                  default: 0.0
                 style_exaggeration:
                   type: number
                   minimum: 0
                   maximum: 1
-                  default: 0.0
+                  description:
+                    Level of exaggeration of the speaking style. Available
+                    only for custom voices.             Higher values will make increase
+                    similarity of cloned voice but may cause the audio to be less
+                    stable.
+                  default: 0.5
               required:
                 - slate_script
                 - voice_id
-                - language_id
       security:
         - apiKeyAuth: []
       responses:
@@ -520,6 +619,9 @@ paths:
                   name:
                     type: string
                     description: Name of the authenticated user.
+                  email:
+                    type: string
+                    description: Email of the authenticated user.
           description: ""
 components:
   schemas:
@@ -596,9 +698,15 @@ components:
           readOnly: true
           description: Name of the Avatar.
         gender:
-          type: integer
+          allOf:
+            - $ref: "#/components/schemas/GenderB68Enum"
           readOnly: true
-          description: Gender of the Avatar.
+          description: |-
+            Gender of the Avatar.
+
+            * `1` - Male
+            * `2` - Female
+            * `3` - Non Binary
         cropped_asset:
           type: string
           format: uri
@@ -657,9 +765,15 @@ components:
           readOnly: true
           description: Name of the Avatar.
         gender:
-          type: integer
+          allOf:
+            - $ref: "#/components/schemas/GenderB68Enum"
           readOnly: true
-          description: Gender of the Avatar.
+          description: |-
+            Gender of the Avatar.
+
+            * `1` - Male
+            * `2` - Female
+            * `3` - Non Binary
       required:
         - gender
         - id
@@ -870,7 +984,7 @@ components:
           description: Name of the voice.
         gender:
           allOf:
-            - $ref: "#/components/schemas/GenderEnum"
+            - $ref: "#/components/schemas/ApiVoiceGenderEnum"
           readOnly: true
           description: |-
             Gender of the voice.
@@ -915,6 +1029,14 @@ components:
         - stability
         - style_exaggeration
         - voice_accent
+    ApiVoiceGenderEnum:
+      enum:
+        - Male
+        - Female
+      type: string
+      description: |-
+        * `Male` - Male
+        * `Female` - Female
     AspectRatioEnum:
       enum:
         - "16:9"
@@ -958,14 +1080,16 @@ components:
       required:
         - id
         - name
-    GenderEnum:
+    GenderB68Enum:
       enum:
-        - Male
-        - Female
-      type: string
+        - 1
+        - 2
+        - 3
+      type: integer
       description: |-
-        * `Male` - Male
-        * `Female` - Female
+        * `1` - Male
+        * `2` - Female
+        * `3` - Non Binary
     Langauge:
       type: object
       properties:
@@ -1009,6 +1133,26 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ApiUserVoiceAudios"
+    PaginatedApiVideoListList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/ApiVideoList"
     PaginatedApiVoiceList:
       type: object
       properties:
@@ -1110,5 +1254,6 @@ components:
       name: X-API-KEY
       description:
         "Your API key with the prefix: `dr_`. This is required by all endpoints
-        to access our API programatically. You can view your x-api-key using the 'Profile'
-        tab on the website."
+        to access our API programatically.                             You can view
+        your API Key by navigating to the account settings panel (In the bottom left
+        corner click on your                             `Account` → `profile`)"

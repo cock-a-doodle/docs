@@ -87,7 +87,7 @@ To finalize the integration, you need to register your webhook endpoint with Dee
 curl --request POST
 --url 'https://api.deepreel.com/webhook/endpoint' \
 --header 'Content-Type: application/json' \
---header 'X-Api-Key: <your-api-key>' \
+--header 'x-api-key: <your-api-key>' \
 --data '{
   "url": "https://smee.io/<id>",
   "events": ["video.generation.success"]

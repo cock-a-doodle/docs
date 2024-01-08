@@ -108,7 +108,7 @@ Utilize the 'add a webhook endpoint' feature to register your endpoint, which wi
 curl --request POST
 --url 'https://api.deepreel.com/webhook/endpoint' \
 --header 'Content-Type: application/json' \
---header 'X-Api-Key: <your-api-key>' \
+--header 'x-api-key: <your-api-key>' \
 --data '{
   "url": "<your-endpoint>",
   "events": ["video.generation.success"]
