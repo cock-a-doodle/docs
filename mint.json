@@ -20,24 +20,32 @@
     "name": "Sign Up",
     "url": "https://beta.deepreel.com/signin"
   },
+  "topbarLinks": [
+    {
+      "name": "Home Page",
+      "url": "https://deepreel.com/"
+    }
+  ],
+
   "navigation": [
     {
-      "group": "Video",
+      "group": "Get Started",
       "pages": [
-        "api-reference/video/get-video",
-        "api-reference/video/create-video",
-        "api-reference/video/update-video",
-        "api-reference/video/delete-video",
-        "api-reference/video/list-videos"
+        "quick-introduction",
+        "authentication",
+        "rate-limits",
+        "requests-responses",
+        {
+          "group": "Webhook",
+          "pages": ["webhook/overview", "webhook/setting-up"]
+        }
       ]
     },
     {
-      "group": "Audio",
+      "group": "Avatar",
       "pages": [
-        "api-reference/audio/create-audio",
-        "api-reference/audio/list-audios",
-        "api-reference/audio/get-audio",
-        "api-reference/audio/delete-audio"
+        "api-reference/avatar/get-avatar",
+        "api-reference/avatar/list-avatars"
       ]
     },
     {
@@ -45,17 +53,29 @@
       "pages": ["api-reference/language/list-languages"]
     },
     {
-      "group": "Voice",
+      "group": "Video",
       "pages": [
-        "api-reference/voice/list-voices",
-        "api-reference/voice/get-voice-saved-settings"
+        "api-reference/video/create-video",
+        "api-reference/video/list-videos",
+        "api-reference/video/get-video",
+        "api-reference/video/delete-video",
+        "api-reference/video/update-video"
       ]
     },
     {
-      "group": "Avatar",
+      "group": "Voice",
       "pages": [
-        "api-reference/avatar/list-avatars",
-        "api-reference/avatar/get-avatar"
+        "api-reference/voice/get-voice-saved-settings",
+        "api-reference/voice/list-voices"
+      ]
+    },
+    {
+      "group": "Audio",
+      "pages": [
+        "api-reference/audio/create-audio",
+        "api-reference/audio/get-audio",
+        "api-reference/audio/list-audios",
+        "api-reference/audio/delete-audio"
       ]
     },
     {
