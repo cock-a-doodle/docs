@@ -85,28 +85,20 @@ To finalize the integration, you need to register your webhook endpoint with Dee
 <CodeGroup>
 ```bash Request
 curl --request POST
---url 'https://api.deepreel.com/webhook/endpoint' \
+--url 'https://deepreel-api.afcodes.com/user/webhook/' \
 --header 'Content-Type: application/json' \
 --header 'x-api-key: <your-api-key>' \
 --data '{
-  "url": "https://smee.io/<id>",
+  "endpoint": "https://smee.io/<id>",
   "events": ["video.generation.success"]
 }'
 ```
 
 ```javascript Response (Success)
 {
-  "error": null,
-  "data": [
-    {
-      "status": "enabled",
-      "events": ["video.generation.success"],
-      "created_at": "2023-12-01T00:00:00",
-      "url": "<your-webhook-endpoint-uri>",
-      "endpoint_id": "<endpoint_id>",
-      "secret": "<secret>"
-    }
-  ]
+  "endpoint": "https://smee.io/<id>",
+  "key": "<secret>"
+  "events": ["video.generation.success"]
 }
 ```
 
@@ -164,7 +156,7 @@ def webhook_event_listener():
     else:
       print(f"Event Type: {event_type}; Event Error: {event_error}")
 
-    return "Success!", 200c
+    return "Success!", 200
 
 if __name__ == "__main__":
     app.run(debug=True)

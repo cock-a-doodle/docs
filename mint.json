@@ -84,6 +84,15 @@
         "api-reference/user/get-info",
         "api-reference/user/get-subscription-info"
       ]
+    },
+    {
+      "group": "Webhook",
+      "pages": [
+        "api-reference/webhook/register-webhook",
+        "api-reference/webhook/get-registered-webhook",
+        "api-reference/webhook/delete-registered-webhook",
+        "api-reference/webhook/list-subscribable-events"
+      ]
     }
   ],
   "api": {

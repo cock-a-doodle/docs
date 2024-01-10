@@ -1,6 +1,6 @@
 # Mintlify Starter Kit
 
-Used to create our [DeepReel API](https://api.deepreel.com) documentation.
+Used to create our [DeepReel API](https://deepreel-api.afcodes.com) documentation.
 
 Click on `Use this template` to copy the Mintlify starter kit. The starter kit contains examples including
 

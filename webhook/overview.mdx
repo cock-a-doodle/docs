@@ -12,8 +12,7 @@ Let's begin exploring webhooks by enumerating all the available webhook events w
 
 <Note>
   For now the only subscribable events are `video.generation.success`,
-  `video.generation.fail`, `audio.generation.success` and
-  `audio.generation.fail`.
+  and `video.generation.fail`
 </Note>
 
 <Note>
@@ -23,7 +22,7 @@ Let's begin exploring webhooks by enumerating all the available webhook events w
 <CodeGroup>
 ```bash Request
 curl -request GET
---url https://api.deepreel.com/webhook/events
+--url https://deepreel-api.afcodes.com/webhook/events
 --header 'accept: application/json'
 --header 'x-api-key: <your-api-key>'
 ```
@@ -33,8 +32,6 @@ curl -request GET
   "events": [
     "video.generation.success",
     "video.generation.fail",
-    "audio.generation.success",
-    "audio.generation.fail"
   ]
 }
 ```
@@ -50,7 +47,8 @@ curl -request GET
   "type": "video.generation.success",
   "error": null,
   "data": {
-    "video_id": "<video_id>"
+    "video_id": "<video_id>",
+    "video_url": "<video_url>"
   }
 }
 ```
@@ -61,30 +59,7 @@ curl -request GET
   "error": "<error-detail>",
   "data": {
     "video_id": "<video_id>"
-  }
-}
-```
-
-</CodeGroup>
-<br/>
-<CodeGroup>
-
-```javascript Audio Generation Success
-{
-  "type": "audio.generation.success",
-  "error": null,
-  "data": {
-    "audio_id": "<audio_id>"
-  }
-}
-```
-
-```javascript Audio Generation Failed
-{
-  "type": "audio.generation.success",
-  "error": "<error-detail>",
-  "data": {
-    "audio_id": "<audio_id>"
+    "video_url": null
   }
 }
 ```
@@ -93,48 +68,41 @@ curl -request GET
 
 ## Register a Webhook Endpoint
 
-[See detailed API reference](/api-reference/webhook/register-endpoint)
-Utilize the 'add a webhook endpoint' feature to register your endpoint, which will handle DeepReel events.
+[See detailed API reference](/api-reference/webhook/register-webhook)
+Utilize the webhook register endpoint to register your endpoint, which will listen for DeepReel events.
 
-`events` refers to the specific events you wish to process. If this is not specified, your endpoint will receive all supported events from DeepReel.
+`events` refers to the specific events you wish to process. If set to `null`, your endpoint will receive all supported events from DeepReel.
 
 <Warning>
-  Please note that this action will overwrite any previously registered
-  endpoint.
+  Please note that you can register on one webhook endpoint. Delete the old
+  webhook before registering a new one.
 </Warning>
 
 <CodeGroup>
 ```bash Request
 curl --request POST
---url 'https://api.deepreel.com/webhook/endpoint' \
+--url 'https://deepreel-api.afcodes.com/user/webhook/' \
 --header 'Content-Type: application/json' \
 --header 'x-api-key: <your-api-key>' \
 --data '{
-  "url": "<your-endpoint>",
+  "endpoint": "<your-endpoint>",
   "events": ["video.generation.success"]
 }'
 ```
 
 ```javascript Response (Success)
 {
-  "error": null,
-  "data": [
-    {
-      "status": "enabled",
-      "events": ["video.generation.success"],
-      "created_at": "2023-12-01T00:00:00",
-      "url": "<your-webhook-endpoint-uri>",
-      "endpoint_id": "<endpoint_id>",
-      "secret": "<secret>"
-    }
-  ]
+    "endpoint": "<your-endpoint>",
+    "key": "<secret>",
+    "events": [
+        "video.generation.success"
+    ]
 }
 ```
 
 ```javascript Response (Error)
 {
-  "error": "<error-detail>",
-  "data": null
+  "message": "<error-detail>"
 }
 ```
 
@@ -142,74 +110,48 @@ curl --request POST
 
 ## Get Registered Webhook Endpoint
 
-[See detailed API reference](/api-reference/webhook/get-registered-endpoint)
+[See detailed API reference](/api-reference/webhook/get-registered-webhook)
 You can use this endpoint to get your registered endpoint.
 
 <CodeGroup>
 ```bash Request
 curl -request GET
---url https://api.deepreel.com/webhook/endpoint
+--url https://deepreel-api.afcodes.com/user/webhook/
 --header 'accept: application/json'
 --header 'x-api-key: <your-api-key>'
 ```
 
-```javascript Response
+```javascript Response (200)
 {
-  "error": null,
-  "data": [
-    {
-      "status": "enabled",
-      "events": ["video.generation.success"],
-      "created_at": "2023-12-01T00:00:00",
-      "url": "<your-webhook-endpoint-uri>",
-      "endpoint_id": "<endpoint_id>",
-      "secret": "<secret>"
-    }
-  ]
+    "endpoint": "<your-endpoint>",
+    "key": "<secret>",
+    "events": [
+        "video.generation.success"
+    ]
 }
+```
+
+```javascript Response(404)
+No Content
 ```
 
 </CodeGroup>
 
-## Update a Registered Webhook Endpoint
+## Delete a Registered Webhook Endpoint
 
-[See detailed API reference](/api-reference/webhook/update-registered-endpoint)
+[See detailed API reference](/api-reference/webhook/delete-registered-webhook)
 
-Utilize the update a webhook endpoint to modify an already registered endpoint.
+Utilize the webhook delete endpoint to delete a registered endpoint.
 
 <CodeGroup>
 ```bash Request
-curl -request PATCH
---url https://api.deepreel.com/webhook/endpoint
+curl -request DELETE
+--url https://deepreel-api.afcodes.com/user/webhook/
 --header 'x-api-key: <your-api-key>'
---data '{
-  "endpoint_id": "<endpoint_id>",
-  "url": "<new-url>",
-  "events": [
-    "video.generation.success",
-    "audio.generation.success"
-  ],
-  "disable": false
-}'
 ```
 
-```javascript Response
-{
-  "error": null,
-  "data": [
-    {
-      "status": "enabled",
-      "events": [
-        "video.generation.success",
-        "audio.generation.success"
-      ],
-      "created_at": "2023-12-01T00:00:00",
-      "url": "<your-webhook-endpoint-uri>",
-      "endpoint_id": "<endpoint_id>",
-      "secret": "<secret>"
-    }
-  ]
-}
+```javascript Response(204)
+No Content
 ```
 
 </CodeGroup>

@@ -19,12 +19,13 @@ paths:
             type: integer
             enum:
               - 1
-                - Male
               - 2
-                - Female
               - 3
-                - Non Binary
-          description: Filter the Avatars based on the Gender.
+          description: |-
+            Filter the Avatars based on the Gender. Available Options:
+            * `1` - Male
+            * `2` - Female
+            * `3` - Non Binary
         - in: query
           name: is_custom
           schema:
@@ -210,6 +211,7 @@ paths:
           name: age_group
           schema:
             type: string
+            nullable: true
             enum:
               - Adult
               - Old
@@ -289,11 +291,13 @@ paths:
           schema:
             type: string
             enum:
-              - -created_at - Sort by decending created at date (newest to oldest).
-              - created_at - Sort by ascending created at date (oldest to newest).
-          description:
-            Sort by the date of video creation (Ascending/Descending).                     <br>
+              - -created_at
+              - created_at
+          description: |-
+            Sort by the date of video creation (Ascending/Descending).
             If not provided, the resultset will be sort by newest to oldest.
+            * `created_at` - Sort by ascending created at date (oldest to newest)
+            * `-created_at` - Sort by decending created at date (newest to oldest)
         - name: page
           required: false
           in: query
@@ -622,6 +626,83 @@ paths:
                   email:
                     type: string
                     description: Email of the authenticated user.
+          description: ""
+  /user/webhook/:
+    get:
+      operationId: Get Registered Webhook
+      description: Gets detail of the registered webhook
+      tags:
+        - user
+      security:
+        - apiKeyAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserWebhook"
+          description: ""
+        "404":
+          description: No response body
+    post:
+      operationId: Register a Webhook
+      description: Register a webhook to listen to the events.
+      tags:
+        - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/register-webhook"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/register-webhook"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/register-webhook"
+        required: true
+      security:
+        - apiKeyAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserWebhook"
+          description: ""
+        "400":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+          description: ""
+    delete:
+      operationId: Delete a registered Webhook
+      description: Delete a registered webhook.
+      tags:
+        - user
+      security:
+        - apiKeyAuth: []
+      responses:
+        "204":
+          description: No response body
+  /user/webhook/events/:
+    get:
+      operationId: List available webhook events
+      description: list all supported webhook events
+      tags:
+        - user
+      security:
+        - apiKeyAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/subscribable_events"
           description: ""
 components:
   schemas:
@@ -1233,6 +1314,28 @@ components:
         - mode
         - plan
         - start_date
+    UserWebhook:
+      type: object
+      description: Allows to specify fields to be included
+      properties:
+        endpoint:
+          type: string
+          format: uri
+          description: Endpoint to listen to the subscribed events.
+        key:
+          type: string
+          description: Secret key to perform HTTP Signature Verification.
+        events:
+          type: array
+          items:
+            type: string
+            description: Name of the event
+          readOnly: true
+          description: Events to be observed.
+      required:
+        - endpoint
+        - events
+        - key
     VideoStatusEnum:
       enum:
         - Pending
@@ -1247,6 +1350,35 @@ components:
         * `Queued` - Queued
         * `Processing` - Processing
         * `Failed` - Failed
+    register-webhook:
+      type: object
+      properties:
+        endpoint:
+          type: string
+          format: uri
+          description: URL of the webhook endpoint to receive events
+        events:
+          type: array
+          items:
+            type: string
+            description: Name of the event.
+          description:
+            List of subscribable events your webhook wants to listen to.                                                                `null`
+            means to subscribe to all the available events.
+      required:
+        - endpoint
+        - events
+    subscribable_events:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: string
+            description: Name of the event.
+          description: List of subscribable events your webhook can listen to.
+      required:
+        - data
   securitySchemes:
     apiKeyAuth:
       type: apiKey
