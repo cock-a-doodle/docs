@@ -270,6 +270,21 @@ paths:
               schema:
                 $ref: "#/components/schemas/PaginatedApiVoiceList"
           description: ""
+        "400":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    nullable: false
+                    description: Text of the error message.
+                  detail:
+                    type: object
+                    nullable: true
+                    description: Detail of the error message.
+          description: ""
   /project/assets/user_voice/{id}/:
     get:
       operationId: Get Voice Properties
@@ -292,6 +307,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiVoice"
+          description: ""
+        "404":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    nullable: false
+                    description: Text of the error message.
+                  detail:
+                    type: object
+                    nullable: true
+                    description: Detail of the error message.
           description: ""
   /project/assets/video/:
     get:
@@ -346,7 +376,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiVideo"
           description: ""
-        "400":
+        "404":
           content:
             application/json:
               schema:
@@ -395,7 +425,22 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiVideo"
           description: ""
-        "400":
+        "404":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    nullable: false
+                    description: Text of the error message.
+                  detail:
+                    type: object
+                    nullable: true
+                    description: Detail of the error message.
+          description: ""
+        "403":
           content:
             application/json:
               schema:
@@ -428,7 +473,22 @@ paths:
       responses:
         "204":
           description: No response body
-        "400":
+        "404":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    nullable: false
+                    description: Text of the error message.
+                  detail:
+                    type: object
+                    nullable: true
+                    description: Detail of the error message.
+          description: ""
+        "403":
           content:
             application/json:
               schema:
@@ -556,9 +616,6 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/GenerateAudioRequest"
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: "#/components/schemas/GenerateAudioRequest"
         required: true
       security:
         - apiKeyAuth: []
@@ -652,12 +709,6 @@ paths:
       requestBody:
         content:
           application/json:
-            schema:
-              $ref: "#/components/schemas/RegisterWebHookRequest"
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: "#/components/schemas/RegisterWebHookRequest"
-          multipart/form-data:
             schema:
               $ref: "#/components/schemas/RegisterWebHookRequest"
         required: true
@@ -1193,7 +1244,36 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/NodeParagraph"
-          description: List of nodes of structured text content.
+          description: |-
+            The final text content is represented as a list of paragraph
+            objects, each of which contains two properties: `type` and `children`, and follows this format:
+            ```
+            {
+              'type': 'paragraph',
+              'children': [...]
+            }
+            ```
+            where the `children` property is a list of objects that can contain script nodes.
+            A script node can be either a TEXT node or a Tag node with the following format:
+            For TEXT node:
+            ```
+            {
+              'text': 'some text...'
+            }
+            ```
+            where the `text` property is of type string and contains the actual text representing
+            a single line or phrase to be spoken.
+
+            To add a pause to your text, you can use the Tag node:
+            ```
+            {
+              'type': 'pause',
+              'value': 2
+            }
+            ```
+            where the `type` property with a 'pause' literal is used to insert a pause
+            in the audio, and the `value` property specifies the duration of the pause in seconds.
+            Please note that themaximum duration allowed is 10 seconds.
         voice_id:
           type: string
           format: uuid
@@ -1267,6 +1347,66 @@ components:
       description: |-
         * `month` - month
         * `year` - year
+    NodeChild:
+      oneOf:
+        - $ref: "#/components/schemas/NodeText"
+        - $ref: "#/components/schemas/NodeTag"
+    NodeParagraph:
+      type: object
+      properties:
+        type:
+          allOf:
+            - $ref: "#/components/schemas/NodeParagraphTypeEnum"
+          readOnly: true
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/NodeChild"
+      required:
+        - children
+        - type
+    NodeParagraphTypeEnum:
+      enum:
+        - paragraph
+      type: string
+      description: "* `paragraph` - paragraph"
+    NodeTag:
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/NodeTagTypeEnum"
+        value:
+          type: string
+      required:
+        - type
+        - value
+    NodeTagTypeEnum:
+      enum:
+        - pause
+        - variable
+      type: string
+      description: |-
+        * `pause` - pause
+        * `variable` - variable
+    NodeText:
+      type: object
+      properties:
+        text:
+          type: string
+        speedValue:
+          type: integer
+          readOnly: true
+        volumeValue:
+          type: string
+          readOnly: true
+        pitchValue:
+          type: string
+          readOnly: true
+        customPronounciation:
+          type: string
+          readOnly: true
+      required:
+        - text
     PaginatedApiUserVoiceAudiosList:
       type: object
       properties:
@@ -1287,59 +1427,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ApiUserVoiceAudios"
-    NodeChild:
-      oneOf:
-        - $ref: "#/components/schemas/NodeValue"
-        - $ref: "#/components/schemas/NodeText"
-    NodeParagraph:
-      type: object
-      properties:
-        type:
-          $ref: "#/components/schemas/NodeParagraphTypeEnum"
-        children:
-          type: array
-          items:
-            $ref: "#/components/schemas/NodeChild"
-      required:
-        - children
-    NodeParagraphTypeEnum:
-      enum:
-        - paragraph
-      type: string
-      description: "* `paragraph` - paragraph"
-    NodeText:
-      type: object
-      properties:
-        text:
-          type: string
-        speedValue:
-          type: integer
-        volumeValue:
-          type: string
-        pitchValue:
-          type: string
-        customPronounciation:
-          type: string
-      required:
-        - text
-    NodeValue:
-      type: object
-      properties:
-        type:
-          $ref: "#/components/schemas/NodeValueTypeEnum"
-        value:
-          type: string
-      required:
-        - type
-        - value
-    NodeValueTypeEnum:
-      enum:
-        - pause
-        - variable
-      type: string
-      description: |-
-        * `pause` - pause
-        * `variable` - variable
     PaginatedApiVoiceList:
       type: object
       properties:
