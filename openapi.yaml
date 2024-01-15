@@ -83,8 +83,14 @@ paths:
               schema:
                 type: object
                 properties:
-                  detail:
+                  message:
                     type: string
+                    nullable: false
+                    description: Text of the error message.
+                  detail:
+                    type: object
+                    nullable: true
+                    description: Detail of the error message.
           description: ""
         "404":
           content:
@@ -92,8 +98,14 @@ paths:
               schema:
                 type: object
                 properties:
-                  detail:
+                  message:
                     type: string
+                    nullable: false
+                    description: Text of the error message.
+                  detail:
+                    type: object
+                    nullable: true
+                    description: Detail of the error message.
           description: ""
   /project/assets/language/:
     get:
@@ -298,12 +310,6 @@ paths:
             If not provided, the resultset will be sort by newest to oldest.
             * `created_at` - Sort by ascending created at date (oldest to newest)
             * `-created_at` - Sort by decending created at date (newest to oldest)
-        - name: page
-          required: false
-          in: query
-          description: A page number within the paginated result set.
-          schema:
-            type: integer
       tags:
         - project
       security:
@@ -313,7 +319,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PaginatedApiVideoListList"
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiVideoList"
           description: ""
   /project/assets/video/{id}/:
     get:
@@ -337,6 +345,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiVideo"
+          description: ""
+        "400":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    nullable: false
+                    description: Text of the error message.
+                  detail:
+                    type: object
+                    nullable: true
+                    description: Detail of the error message.
           description: ""
     put:
       operationId: Update Video
@@ -366,6 +389,12 @@ paths:
       security:
         - apiKeyAuth: []
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiVideo"
+          description: ""
         "400":
           content:
             application/json:
@@ -374,12 +403,12 @@ paths:
                 properties:
                   message:
                     type: string
-          description: ""
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiVideo"
+                    nullable: false
+                    description: Text of the error message.
+                  detail:
+                    type: object
+                    nullable: true
+                    description: Detail of the error message.
           description: ""
     delete:
       operationId: Delete Video
@@ -397,6 +426,8 @@ paths:
       security:
         - apiKeyAuth: []
       responses:
+        "204":
+          description: No response body
         "400":
           content:
             application/json:
@@ -405,9 +436,13 @@ paths:
                 properties:
                   message:
                     type: string
+                    nullable: false
+                    description: Text of the error message.
+                  detail:
+                    type: object
+                    nullable: true
+                    description: Detail of the error message.
           description: ""
-        "204":
-          description: No response body
   /project/generate_video/:
     post:
       operationId: Generate Video
@@ -520,43 +555,11 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                slate_script:
-                  type: string
-                  description: Content to be spoken.
-                voice_id:
-                  type: string
-                  format: uuid
-                  description: The voice to be used to generate the audio
-                language_id:
-                  type: number
-                  description:
-                    Language used to generate the audio.                                                 Laungauge
-                    Id for `English - Default (en-us)` is `94`
-                stability:
-                  type: number
-                  minimum: 0
-                  maximum: 1
-                  description:
-                    This controls the level of variation in generated audio.             Low
-                    stability will increase expressiveness of speech while high             stability
-                    will lower expressiveness but increase the predictability of how
-                    the script is spoken.
-                  default: 0.0
-                style_exaggeration:
-                  type: number
-                  minimum: 0
-                  maximum: 1
-                  description:
-                    Level of exaggeration of the speaking style. Available
-                    only for custom voices.             Higher values will make increase
-                    similarity of cloned voice but may cause the audio to be less
-                    stable.
-                  default: 0.5
-              required:
-                - slate_script
-                - voice_id
+              $ref: "#/components/schemas/GenerateAudioRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/GenerateAudioRequest"
+        required: true
       security:
         - apiKeyAuth: []
       responses:
@@ -564,18 +567,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uuid
-                    description: Id of the generated audio.
-                  download_url:
-                    type: string
-                    format: uri
-                    description:
-                      "URL to download the audio.                                                 _Note:
-                      URL will we valid for 60 minutes only._"
+                $ref: "#/components/schemas/GenerateAudioResponse"
           description: ""
         "400":
           content:
@@ -585,6 +577,12 @@ paths:
                 properties:
                   message:
                     type: string
+                    nullable: false
+                    description: Text of the error message.
+                  detail:
+                    type: object
+                    nullable: true
+                    description: Detail of the error message.
           description: ""
   /subscription/active/:
     get:
@@ -614,18 +612,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uuid
-                    description: Unique Identifier of the authenticated user.
-                  name:
-                    type: string
-                    description: Name of the authenticated user.
-                  email:
-                    type: string
-                    description: Email of the authenticated user.
+                $ref: "#/components/schemas/user_info"
           description: ""
   /user/webhook/:
     get:
@@ -643,7 +630,20 @@ paths:
                 $ref: "#/components/schemas/UserWebhook"
           description: ""
         "404":
-          description: No response body
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    nullable: false
+                    description: Text of the error message.
+                  detail:
+                    type: object
+                    nullable: true
+                    description: Detail of the error message.
+          description: ""
     post:
       operationId: Register a Webhook
       description: Register a webhook to listen to the events.
@@ -653,13 +653,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/register-webhook"
+              $ref: "#/components/schemas/RegisterWebHookRequest"
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/register-webhook"
+              $ref: "#/components/schemas/RegisterWebHookRequest"
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/register-webhook"
+              $ref: "#/components/schemas/RegisterWebHookRequest"
         required: true
       security:
         - apiKeyAuth: []
@@ -678,6 +678,12 @@ paths:
                 properties:
                   message:
                     type: string
+                    nullable: false
+                    description: Text of the error message.
+                  detail:
+                    type: object
+                    nullable: true
+                    description: Detail of the error message.
           description: ""
     delete:
       operationId: Delete a registered Webhook
@@ -707,6 +713,11 @@ paths:
 components:
   schemas:
     ActiveSubscription:
+      type: object
+      properties:
+        subscription:
+          $ref: "#/components/schemas/ActiveSubscriptionDetail"
+    ActiveSubscriptionDetail:
       type: object
       properties:
         plan:
@@ -895,10 +906,12 @@ components:
           readOnly: true
           description: Id of the language used to generate the Audio.
         stability:
-          type: integer
+          type: number
+          format: double
           description: Expressiveness of speaking style.
         style_exaggeration:
-          type: integer
+          type: number
+          format: double
           description: Level of exaggeration of the speaking style.
         audio_download_url:
           type: string
@@ -1087,11 +1100,13 @@ components:
           readOnly: true
           description: Accent of the voice.
         stability:
-          type: integer
+          type: number
+          format: double
           readOnly: true
           description: Expressiveness of speaking style.
         style_exaggeration:
-          type: integer
+          type: number
+          format: double
           readOnly: true
           description: Level of exaggeration of the speaking style.
         sample_audio_url:
@@ -1171,6 +1186,64 @@ components:
         * `1` - Male
         * `2` - Female
         * `3` - Non Binary
+    GenerateAudioRequest:
+      type: object
+      properties:
+        slate_script:
+          type: array
+          items:
+            $ref: "#/components/schemas/NodeParagraph"
+          description: List of nodes of structured text content.
+        voice_id:
+          type: string
+          format: uuid
+          description: The voice to be used to generate the audio
+        language_id:
+          type: integer
+          default: 94
+          description:
+            Language used to generate the audio.                                                       Language
+            Id for `English - Default (en-us)` is `94`
+        stability:
+          type: number
+          format: double
+          maximum: 1.0
+          minimum: 0.0
+          default: 0.5
+          description:
+            This controls the level of variation in generated audio.             Low
+            stability will increase expressiveness of speech while high             stability
+            will lower expressiveness but increase the predictability of how the script
+            is spoken.
+        style_exaggeration:
+          type: number
+          format: double
+          maximum: 1.0
+          minimum: 0.0
+          default: 0.0
+          description:
+            Level of exaggeration of the speaking style. Available only
+            for custom voices.             Higher values will make increase similarity
+            of cloned voice but may cause the audio to be less stable.
+      required:
+        - slate_script
+        - voice_id
+    GenerateAudioResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Id of the generated audio.
+        download_url:
+          type: string
+          format: uri
+          description:
+            "URL to download the audio.                                         _Note:
+            URL will we valid for 60 minutes only._"
+      required:
+        - download_url
+        - id
     Langauge:
       type: object
       properties:
@@ -1214,26 +1287,59 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ApiUserVoiceAudios"
-    PaginatedApiVideoListList:
+    NodeChild:
+      oneOf:
+        - $ref: "#/components/schemas/NodeValue"
+        - $ref: "#/components/schemas/NodeText"
+    NodeParagraph:
       type: object
       properties:
-        count:
-          type: integer
-          example: 123
-        next:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=4
-        previous:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=2
-        results:
+        type:
+          $ref: "#/components/schemas/NodeParagraphTypeEnum"
+        children:
           type: array
           items:
-            $ref: "#/components/schemas/ApiVideoList"
+            $ref: "#/components/schemas/NodeChild"
+      required:
+        - children
+    NodeParagraphTypeEnum:
+      enum:
+        - paragraph
+      type: string
+      description: "* `paragraph` - paragraph"
+    NodeText:
+      type: object
+      properties:
+        text:
+          type: string
+        speedValue:
+          type: integer
+        volumeValue:
+          type: string
+        pitchValue:
+          type: string
+        customPronounciation:
+          type: string
+      required:
+        - text
+    NodeValue:
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/NodeValueTypeEnum"
+        value:
+          type: string
+      required:
+        - type
+        - value
+    NodeValueTypeEnum:
+      enum:
+        - pause
+        - variable
+      type: string
+      description: |-
+        * `pause` - pause
+        * `variable` - variable
     PaginatedApiVoiceList:
       type: object
       properties:
@@ -1314,6 +1420,24 @@ components:
         - mode
         - plan
         - start_date
+    RegisterWebHookRequest:
+      type: object
+      properties:
+        endpoint:
+          type: string
+          description: URL of the webhook endpoint to receive events
+        events:
+          type: array
+          items:
+            type: string
+            description: Name of the event.
+          nullable: true
+          description:
+            List of subscribable events your webhook wants to listen to.                                             `null`
+            means to subscribe to all the available events.
+      required:
+        - endpoint
+        - events
     UserWebhook:
       type: object
       description: Allows to specify fields to be included
@@ -1350,24 +1474,6 @@ components:
         * `Queued` - Queued
         * `Processing` - Processing
         * `Failed` - Failed
-    register-webhook:
-      type: object
-      properties:
-        endpoint:
-          type: string
-          format: uri
-          description: URL of the webhook endpoint to receive events
-        events:
-          type: array
-          items:
-            type: string
-            description: Name of the event.
-          description:
-            List of subscribable events your webhook wants to listen to.                                                                `null`
-            means to subscribe to all the available events.
-      required:
-        - endpoint
-        - events
     subscribable_events:
       type: object
       properties:
@@ -1379,6 +1485,24 @@ components:
           description: List of subscribable events your webhook can listen to.
       required:
         - data
+    user_info:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique Identifier of the authenticated user.
+        name:
+          type: string
+          description: Name of the authenticated user.
+        email:
+          type: string
+          format: uuid
+          description: Email of the authenticated user.
+      required:
+        - email
+        - id
+        - name
   securitySchemes:
     apiKeyAuth:
       type: apiKey
